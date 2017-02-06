@@ -27,7 +27,16 @@ func GetAndConvertFrame() error {
 	if err != nil {
 		return err
 	}
+	log.Printf("%s", out)
+
+	vals = strings.Split(configuration.ConvertFrameCommand, " ")
+
+	out, err = exec.Command(vals[0], vals[1:]...).Output()
+	if err != nil {
+		return err
+	}
 
 	log.Printf("%s", out)
+
 	return nil
 }
