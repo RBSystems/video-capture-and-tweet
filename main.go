@@ -68,7 +68,7 @@ func GetAndConvertFrame() (string, error) {
 }
 
 func cropImage(path string) (string, error) {
-	img, err := imaging.Open("./big.jpg")
+	img, err := imaging.Open(path)
 	if err != nil {
 		return "", err
 	}
