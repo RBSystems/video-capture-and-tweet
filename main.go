@@ -49,7 +49,7 @@ func GetAndConvertFrame() (string, error) {
 		os.MkdirAll("/tmp/images", 0777)
 	}
 
-	filename := "/tmp/images/" + time.Now().Format(time.RFC3339) + ".raw"
+	filename := "/tmp/images/" + time.Now().Format(time.RFC3339) + ".png"
 	err = os.Rename(configuration.OutputFile, filename)
 	if err != nil {
 		return "", err
