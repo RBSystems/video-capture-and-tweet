@@ -1,4 +1,4 @@
 {
-  "CaptureFrameCommand": "Capture -d 0 -m 13 -n 1 -v /tmp/frame-out.raw -a ~/tmp/audio.raw",
+  "CaptureFrameCommand": "Capture -d 0 -m 13 -n 1 -v /tmp/frame-out.raw -a /tmp/audio.raw",
   "ConvertFrameCommand": "ffmpeg -f rawvideo -pixel_format uyvy422 -video_size 1280x720 -i video.raw img%d.png"
 }

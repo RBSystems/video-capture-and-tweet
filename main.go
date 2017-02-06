@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -13,7 +14,10 @@ func main() {
 	//interval := flag.Int("i", 500, "Increment (in seconds)")
 
 	configuration = getConfiguration(*config)
-	GetAndConvertFrame()
+	err := GetAndConvertFrame()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 }
 
