@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 var configuration Configuration
@@ -14,18 +16,19 @@ func main() {
 	//interval := flag.Int("i", 500, "Increment (in seconds)")
 
 	configuration = getConfiguration(*config)
-	err := GetAndConvertFrame()
+	image, err := GetAndConvertFrame()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	log.Printf("Image extracted and saved: %v", image)
 
 }
 
-func GetAndConvertFrame() error {
+func GetAndConvertFrame() (string, error) {
 	vals := strings.Split(configuration.CaptureFrameCommand, " ")
 	out, err := exec.Command(vals[0], vals[1:]...).Output()
 	if err != nil {
-		return err
+		return "", err
 	}
 	log.Printf("%s", out)
 
@@ -33,10 +36,35 @@ func GetAndConvertFrame() error {
 
 	out, err = exec.Command(vals[0], vals[1:]...).Output()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	log.Printf("%s", out)
 
-	return nil
+	ok, err := exists("/tmp/images")
+	if err != nil {
+		return "", err
+	}
+	if !ok {
+		os.MkdirAll("/tmp/images", 0777)
+	}
+
+	filename := "/tmp/images/" + time.Now().Format(time.RFC3339) + ".raw"
+	err = os.Rename(configuration.OutputFile, filename)
+	if err != nil {
+		return "", err
+	}
+
+	return filename, nil
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }

@@ -9,6 +9,7 @@ import (
 type Configuration struct {
 	CaptureFrameCommand string
 	ConvertFrameCommand string
+	OutputFile          string
 }
 
 func getConfiguration(path string) Configuration {
