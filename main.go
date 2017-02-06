@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/disintegration/imaging"
 )
 
 var configuration Configuration
@@ -21,6 +23,13 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	log.Printf("Image extracted and saved: %v", image)
+
+	val, err := cropImage(image)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("%v", val)
 
 }
 
@@ -56,6 +65,23 @@ func GetAndConvertFrame() (string, error) {
 	}
 
 	return filename, nil
+}
+
+func cropImage(path string) (string, error) {
+	img, err := imaging.Open("./big.jpg")
+	if err != nil {
+		return "", err
+	}
+
+	rect := img.Bounds()
+
+	x := rect.Dx()
+	y := rect.Dy()
+
+	log.Printf("x: %v", x)
+	log.Printf("y: %v", y)
+
+	return "", nil
 }
 
 func exists(path string) (bool, error) {
