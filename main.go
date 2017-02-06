@@ -23,9 +23,11 @@ func main() {
 
 func GetAndConvertFrame() error {
 	vals := strings.Split(configuration.CaptureFrameCommand, " ")
-	err := exec.Command(vals[0], vals[1:]...).Run()
+	out, err := exec.Command(vals[0], vals[1:]...).Output()
 	if err != nil {
 		return err
 	}
+
+	log.Printf("%s", out)
 	return nil
 }
