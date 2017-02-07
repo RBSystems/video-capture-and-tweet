@@ -24,7 +24,9 @@ func main() {
 	//interval := flag.Int("i", 500, "Increment (in seconds)")
 
 	configuration = getConfiguration(*config)
+	log.Printf("Getting and converting frame...")
 	image, err := GetAndConvertFrame()
+
 	if err != nil {
 		log.Printf("Error 0: ")
 		log.Fatal(err.Error())
