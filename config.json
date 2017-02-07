@@ -1,5 +1,7 @@
 {
   "CaptureFrameCommand": "Capture -d 0 -m 13 -n 1 -v /tmp/frame-out.raw -a /tmp/audio.raw",
   "ConvertFrameCommand": "ffmpeg -f rawvideo -pixel_format uyvy422 -video_size 1280x720 -i /tmp/frame-out.raw /tmp/img%d.png",
-  "OutputFile": "/tmp/img1.png"
+  "OutputFile": "/tmp/img1.png",
+  "x-crop-size": 1280,
+  "y-crop-size": 240
 }

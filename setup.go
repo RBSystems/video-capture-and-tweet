@@ -10,6 +10,8 @@ type Configuration struct {
 	CaptureFrameCommand string
 	ConvertFrameCommand string
 	OutputFile          string
+	XSize               int `json:"x-crop-size"`
+	YSize               int `json:"y-crop-size"`
 }
 
 func getConfiguration(path string) Configuration {

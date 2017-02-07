@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"image"
 	"log"
 	"os"
 	"os/exec"
@@ -78,10 +79,15 @@ func cropImage(path string) (string, error) {
 	x := rect.Dx()
 	y := rect.Dy()
 
-	log.Printf("x: %v", x)
-	log.Printf("y: %v", y)
+	croppedImage := imaging.Crop(img, image.Rect(0, y-configuration.YSize, x, y))
 
-	return "", nil
+	newPath := strings.Replace(path, ".png", "-cropped.png", -1)
+	if err != nil {
+		return "", err
+	}
+	err = imaging.Save(croppedImage, newPath)
+
+	return newPath, err
 }
 
 func exists(path string) (bool, error) {
