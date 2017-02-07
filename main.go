@@ -1,14 +1,18 @@
 package main
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"flag"
 	"image"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/disintegration/imaging"
 )
 
@@ -27,13 +31,67 @@ func main() {
 
 	val, err := cropImage(image)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
-
 	log.Printf("%v", val)
+
+	err = TweetImage(val)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 }
 
+//Tweet represents what we want to tweet
+type Tweet struct {
+	MediaIds int64  `json:"media_ids,omitempty"`
+	Status   string `json:"status,omitempty"`
+}
+
+//TweetImage takes the image file, uploads it, then tweets it using the media id
+func TweetImage(image string) error {
+	api, err := SetUpAPIAccess()
+	if err != nil {
+		log.Printf("Error: %v", err.Error())
+		return err
+	}
+
+	imageBytes, err := ioutil.ReadFile(image)
+	if err != nil {
+		log.Printf("Error reading the file for tweeting: %v", err.Error())
+		return err
+	}
+
+	imgBase64 := base64.StdEncoding.EncodeToString(imageBytes)
+
+	media, err := api.UploadMedia(imgBase64)
+	if err != nil {
+		return err
+	}
+	tweet := Tweet{MediaIds: media.MediaID, Status: "Test"}
+	b, err := json.Marshal(tweet)
+	if err != nil {
+		return err
+	}
+
+	api.PostTweet(string(b), nil)
+	log.Printf("%+v", media)
+
+	return nil
+}
+
+//SetUpAPIAccess sets the keys and returns the api value
+func SetUpAPIAccess() (*anaconda.TwitterApi, error) {
+
+	anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY"))
+	anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET"))
+
+	api := anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_SECRET"))
+
+	return api, nil
+}
+
+//GetAndConvertFrame f
 func GetAndConvertFrame() (string, error) {
 	vals := strings.Split(configuration.CaptureFrameCommand, " ")
 	out, err := exec.Command(vals[0], vals[1:]...).Output()
