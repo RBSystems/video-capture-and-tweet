@@ -26,18 +26,21 @@ func main() {
 	configuration = getConfiguration(*config)
 	image, err := GetAndConvertFrame()
 	if err != nil {
+		log.Printf("Error 0: ")
 		log.Fatal(err.Error())
 	}
 	log.Printf("Image extracted and saved: %v", image)
 
 	val, err := cropImage(image)
 	if err != nil {
+		log.Printf("Error 1: ")
 		log.Fatal(err.Error())
 	}
 	log.Printf("%v", val)
 
 	err = TweetImage(val)
 	if err != nil {
+		log.Printf("Error 2: ")
 		log.Fatal(err.Error())
 	}
 
