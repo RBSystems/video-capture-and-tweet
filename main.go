@@ -23,6 +23,11 @@ func main() {
 	config := flag.String("c", "./config.json", "configuration file")
 	repeat := flag.Bool("r", false, "Start the bot tweeting on a schedule.")
 	interval := flag.Int("i", 500, "Increment (in seconds)")
+
+	log.Printf("config: %v", config)
+	log.Printf("repeat: %v", repeat)
+	log.Printf("interval: %v", interval)
+
 	configuration = getConfiguration(*config)
 	if repeat == nil {
 		log.Fatal("Invalid repeat option")
