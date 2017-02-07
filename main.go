@@ -20,27 +20,28 @@ import (
 var configuration Configuration
 
 func main() {
-	config := flag.String("c", "./config.json", "configuration file")
-	repeat := flag.Bool("r", false, "Start the bot tweeting on a schedule.")
-	interval := flag.Int("i", 500, "Increment (in seconds)")
+	configptr := flag.String("c", "./config.json", "configuration file")
+	repeatptr := flag.Bool("r", false, "Start the bot tweeting on a schedule.")
+	intervalptr := flag.Int("i", 500, "Increment (in seconds)")
+
+	flag.Parse()
+
+	config := *configptr
+	repeat := *repeatptr
+	interval := *intervalptr
 
 	log.Printf("config: %v", config)
 	log.Printf("repeat: %v", repeat)
 	log.Printf("interval: %v", interval)
 
-	configuration = getConfiguration(*config)
-	if repeat == nil {
-		log.Fatal("Invalid repeat option")
-	}
+	configuration = getConfiguration(config)
 
-	if !*repeat {
+	if !repeat {
 		runCycle()
 	} else {
-		if interval == nil {
-			log.Fatal("Invalid interval.")
-		}
+		runCycle()
 
-		updateInverval := time.Duration(*interval) * time.Second
+		updateInverval := time.Duration(interval) * time.Second
 		ticker := time.NewTicker(updateInverval)
 
 		for {
@@ -48,12 +49,14 @@ func main() {
 			case <-ticker.C:
 				runCycle()
 			}
+			log.Printf("Running again in %v seconds", interval)
 		}
 	}
 
 }
 
 func runCycle() {
+	log.Printf("Starting run..")
 	log.Printf("Getting and converting Frame.")
 	image, err := GetAndConvertFrame()
 
@@ -75,6 +78,7 @@ func runCycle() {
 		log.Printf("Error 2: ")
 		log.Fatal(err.Error())
 	}
+	log.Printf("Done.")
 }
 
 //TweetImage takes the image file, uploads it, then tweets it using the media id
