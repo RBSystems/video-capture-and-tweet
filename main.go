@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"flag"
 	"image"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
@@ -42,12 +43,6 @@ func main() {
 
 }
 
-//Tweet represents what we want to tweet
-type Tweet struct {
-	MediaIds int64  `json:"media_ids,omitempty"`
-	Status   string `json:"status,omitempty"`
-}
-
 //TweetImage takes the image file, uploads it, then tweets it using the media id
 func TweetImage(image string) error {
 	api, err := SetUpAPIAccess()
@@ -68,13 +63,11 @@ func TweetImage(image string) error {
 	if err != nil {
 		return err
 	}
-	tweet := Tweet{MediaIds: media.MediaID, Status: "Test"}
-	b, err := json.Marshal(tweet)
-	if err != nil {
-		return err
-	}
 
-	api.PostTweet(string(b), nil)
+	v := url.Values{}
+	v.Set("media_ids", strconv.FormatInt(media.MediaID, 10))
+
+	api.PostTweet("Test", v)
 	log.Printf("%+v", media)
 
 	return nil
