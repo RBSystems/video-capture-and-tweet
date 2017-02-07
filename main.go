@@ -21,9 +21,35 @@ var configuration Configuration
 
 func main() {
 	config := flag.String("c", "./config.json", "configuration file")
-	//interval := flag.Int("i", 500, "Increment (in seconds)")
-
+	repeat := flag.Bool("r", false, "Start the bot tweeting on a schedule.")
+	interval := flag.Int("i", 500, "Increment (in seconds)")
 	configuration = getConfiguration(*config)
+	if repeat == nil {
+		log.Fatal("Invalid repeat option")
+	}
+
+	if !*repeat {
+		runCycle()
+	} else {
+		if interval == nil {
+			log.Fatal("Invalid interval.")
+		}
+
+		updateInverval := time.Duration(*interval) * time.Second
+		ticker := time.NewTicker(updateInverval)
+
+		for {
+			select {
+			case <-ticker.C:
+				runCycle()
+			}
+		}
+	}
+
+}
+
+func runCycle() {
+	log.Printf("Getting and converting Frame.")
 	image, err := GetAndConvertFrame()
 	if err != nil {
 		log.Printf("Error 0: ")
@@ -43,7 +69,6 @@ func main() {
 		log.Printf("Error 2: ")
 		log.Fatal(err.Error())
 	}
-
 }
 
 //TweetImage takes the image file, uploads it, then tweets it using the media id
