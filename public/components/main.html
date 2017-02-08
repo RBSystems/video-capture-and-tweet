@@ -1,0 +1,21 @@
+{{define "main"}}
+<html>
+
+	{{template "head"}}
+
+	<body onload="init()">
+		{{template "splash"}}
+
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Leave two columns for the "control column" -->
+				<div class="col-xs-10">
+					{{template "navigation"}} {{template "sony-tv-page"}} {{template "room-page"}} {{template "epson-projector-page"}} {{template "help-page"}}
+				</div>
+				{{template "control-column"}}
+			</div>
+		</div>
+	</body>
+
+</html>
+{{end}}

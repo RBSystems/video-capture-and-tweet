@@ -36,9 +36,9 @@ func main() {
 
 	configuration = getConfiguration(config)
 
-	if !repeat {
+	if !repeat { // Run once
 		runCycle()
-	} else {
+	} else { // Repeat on a schedule
 		runCycle()
 
 		updateInverval := time.Duration(interval) * time.Second
@@ -55,6 +55,7 @@ func main() {
 
 }
 
+// runCycle goes through the whole process of obtaining and tweeting an image
 func runCycle() {
 	log.Printf("Starting run..")
 	log.Printf("Getting and converting Frame.")
