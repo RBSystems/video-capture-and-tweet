@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/byuoitav/video-capture-and-tweet/helpers"
+	"github.com/byuoitav/video-capture-and-tweet/views"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -22,7 +24,6 @@ func main() {
 	router.Renderer = templateEngine
 
 	router.GET("/health", echo.WrapHandler(http.HandlerFunc(health.Check)))
-	router.GET("/approve", handlerGroup.Approve)
 
 	// Views
 	router.Static("/*", "public")
