@@ -12,9 +12,16 @@ import (
 //Start starts the tweeting
 func Start(context echo.Context) error {
 	var err error
-	tweeter.Interval, err = strconv.Atoi(context.QueryParam("interval"))
-	if err != nil {
-		return context.JSON(http.StatusBadRequest, "invalid interval")
+	if len(context.QueryParam("interval")) != 0 {
+		tweeter.Interval, err = strconv.Atoi(context.QueryParam("interval"))
+		if err != nil {
+			return context.JSON(http.StatusBadRequest, "invalid interval")
+		}
+	} else {
+		tweeter.Interval = 300 //default interval is 5 minutes
+	}
+	if tweeter.Interval < 5 {
+		return context.JSON(http.StatusBadRequest, "Invalid interval, interval must be 5  or more seconds.")
 	}
 
 	tweeter.StartChannel <- true
