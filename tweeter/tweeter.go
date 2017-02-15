@@ -1,4 +1,4 @@
-package main
+package tweeter
 
 import (
 	"encoding/base64"

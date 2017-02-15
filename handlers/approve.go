@@ -1,7 +1,16 @@
 package handlers
 
-import "github.com/labstack/echo"
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+)
 
 func Approve(context echo.Context) error {
-	return nil
+	err := helpers.Approve()
+	if err != nil {
+		return err
+	}
+
+	return context.JSON(http.StatusOK, "Image approved")
 }
