@@ -35,6 +35,9 @@ var ConfirmStop chan bool
 //Production .
 var Production = false
 
+//Status .
+var Status = false
+
 //Startup .
 func Startup() {
 	ConfirmStop = make(chan bool, 1)
@@ -42,7 +45,11 @@ func Startup() {
 	for {
 		select {
 		case <-StartChannel:
+			log.Printf("Setting status to true.")
+			Status = true
 			startTwitter()
+			log.Printf("Setting status to false.")
+			Status = false
 		}
 	}
 }

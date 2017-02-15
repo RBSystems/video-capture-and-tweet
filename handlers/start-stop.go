@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -37,4 +38,10 @@ func Stop(context echo.Context) error {
 	case <-time.After(time.Second * 5):
 		return context.JSON(http.StatusInternalServerError, "Could not receive stop signal from tweeter.")
 	}
+}
+
+//GetStatus .
+func GetStatus(context echo.Context) error {
+	toReturn := fmt.Sprintf("%v", tweeter.Status)
+	return context.String(http.StatusOK, toReturn)
 }

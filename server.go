@@ -50,6 +50,7 @@ func main() {
 
 	router.GET("/tweeter/start", handlers.Start)
 	router.GET("/tweeter/stop", handlers.Stop)
+	router.GET("/tweeter/status", handlers.GetStatus)
 
 	server := http.Server{
 		Addr:           port,
