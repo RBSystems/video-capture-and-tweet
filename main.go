@@ -73,7 +73,7 @@ func runCycle() {
 	}
 	log.Printf("%v", val)
 
-	err = TweetImage(val)
+		err = TweetImage(val)
 	if err != nil {
 		log.Printf("Error 2: ")
 		log.Fatal(err.Error())
@@ -105,7 +105,7 @@ func TweetImage(image string) error {
 	v := url.Values{}
 	v.Set("media_ids", strconv.FormatInt(media.MediaID, 10))
 
-	api.PostTweet("Test", v)
+	api.PostTweet("", v)
 	log.Printf("%+v", media)
 
 	return nil
@@ -165,10 +165,21 @@ func cropImage(path string) (string, error) {
 
 	rect := img.Bounds()
 
-	x := rect.Dx()
+//	x := rect.Dx()
 	y := rect.Dy()
+	
+	YStart := y-(configuration.YSize+(y-configuration.ScreenSizeY))
+	XStart := 0
 
-	croppedImage := imaging.Crop(img, image.Rect(0, y-configuration.YSize, x, y))
+	XEnd := configuration.XSize
+	YEnd := (y - (y-configuration.ScreenSizeY))
+	
+	log.Printf("X Start: %v", XStart)
+	log.Printf("Y Start: %v", YStart)
+	log.Printf("X End: %v", XEnd)
+	log.Printf("Y End: %v", YEnd)
+
+	croppedImage := imaging.Crop(img, image.Rect(XStart, YStart, XEnd, YEnd))
 
 	newPath := strings.Replace(path, ".png", "-cropped.png", -1)
 	if err != nil {
