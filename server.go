@@ -46,6 +46,8 @@ func main() {
 
 	// Views
 	router.Static("/*", "public")
+	router.GET("/toggle", views.Toggle)
+	router.GET("/approve", views.Approve)
 	router.GET("/", views.Main)
 
 	router.GET("/tweeter/start", handlers.Start)

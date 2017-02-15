@@ -1,0 +1,25 @@
+.toggle-text {
+	color: #aaaaaa;
+	font-weight: bold;
+	line-height: 20px;
+	font-size: 15px;
+}
+
+#dont-tweet {
+	position: absolute;
+	right: 50%;
+	top: 50%;
+	padding-right: 50px;
+	margin-top: -10px;
+	text-align: right;
+}
+
+#tweet {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	padding-left: 50px;
+	width: 48%;
+	height: auto;
+	margin-top: -10px;
+}
