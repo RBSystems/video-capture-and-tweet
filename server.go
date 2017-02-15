@@ -17,10 +17,12 @@ import (
 
 func main() {
 	configptr := flag.String("c", "./config.json", "configuration file")
+	prodptr := flag.Bool("p", false, "if is production")
 
 	flag.Parse()
 
 	config := *configptr
+	tweeter.Production = *prodptr
 
 	log.Printf("config: %v", config)
 

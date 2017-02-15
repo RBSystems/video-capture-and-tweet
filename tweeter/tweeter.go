@@ -32,6 +32,9 @@ var Interval int
 //ConfirmStop .
 var ConfirmStop chan bool
 
+//Production .
+var Production = false
+
 //Startup .
 func Startup() {
 	ConfirmStop = make(chan bool, 1)
@@ -128,13 +131,21 @@ func TweetImage(image string) error {
 
 //SetUpAPIAccess sets the keys and returns the api value
 func SetUpAPIAccess() (*anaconda.TwitterApi, error) {
+	if Production {
+		anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY_PROD"))
+		anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET_PROD"))
+
+		api := anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN_PROD"), os.Getenv("TWITTER_ACCESS_SECRET_PROD"))
+
+		return api, nil
+	}
 
 	anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY"))
 	anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET"))
 
 	api := anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_SECRET"))
-
 	return api, nil
+
 }
 
 //GetAndConvertFrame f
