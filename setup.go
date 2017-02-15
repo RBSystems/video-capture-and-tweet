@@ -12,6 +12,8 @@ type Configuration struct {
 	OutputFile          string
 	XSize               int `json:"x-crop-size"`
 	YSize               int `json:"y-crop-size"`
+	ScreenSizeX	    int `json:"screen-size-x"`
+	ScreenSizeY	    int `json:"screen-size-y"`
 }
 
 func getConfiguration(path string) Configuration {
