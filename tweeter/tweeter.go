@@ -48,7 +48,7 @@ func startTwitter() {
 		<-EndChannel //empty the end channel.
 		return
 	}
-	log.Printf("Starting twitter run every %s seconds.", Interval)
+	log.Printf("Starting twitter run every %v seconds.", Interval)
 	runCycle()
 
 	updateInverval := time.Duration(Interval) * time.Second
@@ -119,7 +119,7 @@ func TweetImage(image string) error {
 	v := url.Values{}
 	v.Set("media_ids", strconv.FormatInt(media.MediaID, 10))
 
-	api.PostTweet("Test", v)
+	api.PostTweet("", v)
 	log.Printf("%+v", media)
 
 	return nil
@@ -179,10 +179,21 @@ func cropImage(path string) (string, error) {
 
 	rect := img.Bounds()
 
-	x := rect.Dx()
+	//	x := rect.Dx()
 	y := rect.Dy()
 
-	croppedImage := imaging.Crop(img, image.Rect(0, y-Config.YSize, x, y))
+	YStart := y - (Config.YSize + (y - Config.ScreenSizeY))
+	XStart := 0
+
+	XEnd := Config.XSize
+	YEnd := (y - (y - Config.ScreenSizeY))
+
+	log.Printf("X Start: %v", XStart)
+	log.Printf("Y Start: %v", YStart)
+	log.Printf("X End: %v", XEnd)
+	log.Printf("Y End: %v", YEnd)
+
+	croppedImage := imaging.Crop(img, image.Rect(XStart, YStart, XEnd, YEnd))
 
 	newPath := strings.Replace(path, ".png", "-cropped.png", -1)
 	if err != nil {
@@ -211,6 +222,8 @@ type Configuration struct {
 	OutputFile          string
 	XSize               int `json:"x-crop-size"`
 	YSize               int `json:"y-crop-size"`
+	ScreenSizeX         int `json:"screen-size-x"`
+	ScreenSizeY         int `json:"screen-size-y"`
 }
 
 //GetConfiguration .
