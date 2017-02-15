@@ -2,7 +2,7 @@ package tweeter
 
 import (
 	"encoding/base64"
-	"flag"
+	"encoding/json"
 	"image"
 	"io/ioutil"
 	"log"
@@ -17,42 +17,55 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-var configuration Configuration
+//Config .
+var Config Configuration
 
-func main() {
-	configptr := flag.String("c", "./config.json", "configuration file")
-	repeatptr := flag.Bool("r", false, "Start the bot tweeting on a schedule.")
-	intervalptr := flag.Int("i", 500, "Increment (in seconds)")
+//StartChannel .
+var StartChannel chan bool
 
-	flag.Parse()
+//EndChannel .
+var EndChannel chan bool
 
-	config := *configptr
-	repeat := *repeatptr
-	interval := *intervalptr
+//Interval .
+var Interval int
 
-	log.Printf("config: %v", config)
-	log.Printf("repeat: %v", repeat)
-	log.Printf("interval: %v", interval)
+//ConfirmStop .
+var ConfirmStop chan bool
 
-	configuration = getConfiguration(config)
-
-	if !repeat { // Run once
-		runCycle()
-	} else { // Repeat on a schedule
-		runCycle()
-
-		updateInverval := time.Duration(interval) * time.Second
-		ticker := time.NewTicker(updateInverval)
-
-		for {
-			select {
-			case <-ticker.C:
-				runCycle()
-			}
-			log.Printf("Running again in %v seconds", interval)
+func startup() {
+	ConfirmStop = make(chan bool, 1)
+	EndChannel = make(chan bool, 1)
+	for {
+		select {
+		case <-StartChannel:
+			startTwitter()
 		}
 	}
+}
 
+func startTwitter() {
+	if len(EndChannel) > 0 {
+		<-EndChannel //empty the end channel.
+		return
+	}
+	log.Printf("Starting twitter run every %s seconds.", Interval)
+	runCycle()
+
+	updateInverval := time.Duration(Interval) * time.Second
+	ticker := time.NewTicker(updateInverval)
+
+	for {
+		select {
+		case <-EndChannel:
+			log.Printf("End message recieved.")
+			ConfirmStop <- true
+			return
+		case <-ticker.C:
+			runCycle()
+			break
+		}
+		log.Printf("Running again in %v seconds", Interval)
+	}
 }
 
 // runCycle goes through the whole process of obtaining and tweeting an image
@@ -125,14 +138,14 @@ func SetUpAPIAccess() (*anaconda.TwitterApi, error) {
 
 //GetAndConvertFrame f
 func GetAndConvertFrame() (string, error) {
-	vals := strings.Split(configuration.CaptureFrameCommand, " ")
+	vals := strings.Split(Config.CaptureFrameCommand, " ")
 	out, err := exec.Command(vals[0], vals[1:]...).Output()
 	if err != nil {
 		return "", err
 	}
 	log.Printf("%s", out)
 
-	vals = strings.Split(configuration.ConvertFrameCommand, " ")
+	vals = strings.Split(Config.ConvertFrameCommand, " ")
 
 	out, err = exec.Command(vals[0], vals[1:]...).Output()
 	if err != nil {
@@ -150,7 +163,7 @@ func GetAndConvertFrame() (string, error) {
 	}
 
 	filename := "/tmp/images/" + time.Now().Format(time.RFC3339) + ".png"
-	err = os.Rename(configuration.OutputFile, filename)
+	err = os.Rename(Config.OutputFile, filename)
 	if err != nil {
 		return "", err
 	}
@@ -169,7 +182,7 @@ func cropImage(path string) (string, error) {
 	x := rect.Dx()
 	y := rect.Dy()
 
-	croppedImage := imaging.Crop(img, image.Rect(0, y-configuration.YSize, x, y))
+	croppedImage := imaging.Crop(img, image.Rect(0, y-Config.YSize, x, y))
 
 	newPath := strings.Replace(path, ".png", "-cropped.png", -1)
 	if err != nil {
@@ -189,4 +202,29 @@ func exists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+//Configuration .
+type Configuration struct {
+	CaptureFrameCommand string
+	ConvertFrameCommand string
+	OutputFile          string
+	XSize               int `json:"x-crop-size"`
+	YSize               int `json:"y-crop-size"`
+}
+
+//GetConfiguration .
+func GetConfiguration(path string) Configuration {
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var config Configuration
+	err = json.Unmarshal(bytes, &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return config
 }

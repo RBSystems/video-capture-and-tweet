@@ -7,10 +7,10 @@ import (
 )
 
 func Approve(context echo.Context) error {
-	err := helpers.Approve()
-	if err != nil {
-		return err
-	}
+	//err := helpers.Approve()
+	//if err != nil {
+	//return err
+	//}
 
 	return context.JSON(http.StatusOK, "Image approved")
 }

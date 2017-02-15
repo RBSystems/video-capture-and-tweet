@@ -1,10 +1,14 @@
 package main
 
 import (
+	"flag"
 	"html/template"
+	"log"
 	"net/http"
 
+	"github.com/byuoitav/video-capture-and-tweet/handlers"
 	"github.com/byuoitav/video-capture-and-tweet/helpers"
+	"github.com/byuoitav/video-capture-and-tweet/tweeter"
 	"github.com/byuoitav/video-capture-and-tweet/views"
 	"github.com/jessemillar/health"
 	"github.com/labstack/echo"
@@ -12,6 +16,17 @@ import (
 )
 
 func main() {
+	configptr := flag.String("c", "./config.json", "configuration file")
+
+	flag.Parse()
+
+	config := *configptr
+
+	log.Printf("config: %v", config)
+
+	tweeter.Config = tweeter.GetConfiguration(config)
+	tweeter.StartChannel = make(chan bool, 1)
+
 	port := ":9000"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
@@ -28,6 +43,9 @@ func main() {
 	// Views
 	router.Static("/*", "public")
 	router.GET("/", views.Main)
+
+	router.GET("/tweeter/start", handlers.Start)
+	router.GET("/tweeter/stop", handlers.Stop)
 
 	server := http.Server{
 		Addr:           port,
