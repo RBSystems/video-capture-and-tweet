@@ -19,6 +19,7 @@ input[type="checkbox"] {
     width: 75px;
     -webkit-appearance: none;
     -webkit-transition: .25s;
+	z-index: 999;
 }
 
 input[type="checkbox"]:focus {

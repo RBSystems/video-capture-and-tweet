@@ -1,7 +1,10 @@
 var isTweeting = false;
 
 document.addEventListener("DOMContentLoaded", function (event) {
-	document.querySelector("input[name=toggle]").addEventListener("change", function() {
+	document.getElementById("toggle").checked = false;
+	getTweetStatus();
+
+	document.getElementById("toggle").addEventListener("change", function() {
 		console.log("Toggled");
 
 		if (isTweeting) {
@@ -13,16 +16,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
 })
 
 function startTweeting() {
-	httpGetAsync("http://av-capture-linux.byu.edu/tweeter/start");
+	httpGetAsync("http://av-capture-linux.byu.edu:9000/tweeter/start", function() {
+		isTweeting = true;
+		console.log("Command to start tweeting sent");
+	});
 }
 
 function stopTweeting() {
-	httpGetAsync("http://av-capture-linux.byu.edu/tweeter/stop");
+	httpGetAsync("http://av-capture-linux.byu.edu:9000/tweeter/stop", function() {
+		isTweeting = false;
+		console.log("Command to stop tweeting sent");
+	});
 }
 
 function getTweetStatus() {
-	httpGetAsync("http://av-capture-linux.byu.edu/tweeter/status", function(status) {
-		isTweeting = status;
+	httpGetAsync("http://av-capture-linux.byu.edu:9000/tweeter/status", function(status) {
+		if (status == "false") {
+			isTweeting = false;
+		} else {
+			isTweeting = true;
+		}
+
+		document.getElementById("toggle").checked = isTweeting;
 	});
 }
 
