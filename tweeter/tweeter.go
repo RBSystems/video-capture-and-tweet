@@ -32,7 +32,8 @@ var Interval int
 //ConfirmStop .
 var ConfirmStop chan bool
 
-func startup() {
+//Startup .
+func Startup() {
 	ConfirmStop = make(chan bool, 1)
 	EndChannel = make(chan bool, 1)
 	for {

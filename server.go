@@ -27,6 +27,8 @@ func main() {
 	tweeter.Config = tweeter.GetConfiguration(config)
 	tweeter.StartChannel = make(chan bool, 1)
 
+	tweeter.Startup()
+
 	port := ":9000"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())
